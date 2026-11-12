@@ -42,7 +42,20 @@ def create_jwt(payload, secret_key, header=None):
     json_head = json.dumps(header)
     json_pay = json.dumps(payload)
 
-    h_and_p = base64.b64encode(str.encode(json_head) + b'.' + str.encode(json_pay))
+    h_and_p = base64.urlsafe_b64encode(str.encode(json_head) + b'.' + str.encode(json_pay))
     sig = HMAC(h_and_p, secret_key)
-    jwt = h_and_p + sig
+    jwt = base64.urlsafe_b64encode(h_and_p + b'.' + sig)
     return jwt
+
+
+# _______________TESTING FOR MAIN____________
+if __name__ == "__main__":
+    payload = {
+        "user_id": 42,
+        "username": "alice",
+        "role": "admin"
+    }
+    secret = "my_super_secret_key"
+    
+    token = create_jwt(payload, secret)
+    print("Generated token:", token)
